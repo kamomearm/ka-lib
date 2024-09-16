@@ -1,14 +1,9 @@
 use std::cell::RefCell;
 
-/// 強連結成分分解
-///
-/// `dag`はトポロジカル順になる
-///
-/// 少し遅いかも?
 pub struct Scc {
-    g: Vec<Vec<usize>>,
-    rg: Vec<Vec<usize>>,
-    kaerigake: RefCell<Vec<usize>>,
+    pub g: Vec<Vec<usize>>,
+    pub rg: Vec<Vec<usize>>,
+    pub kaerigake: RefCell<Vec<usize>>,
     pub dag: Vec<Vec<usize>>,
     pub group_vs: Vec<Vec<usize>>,
 }
@@ -39,13 +34,15 @@ impl Scc {
         }
         self.kaerigake.borrow_mut().push(st);
     }
-    fn rdfs(&self, st: usize, group: &mut Vec<usize>, cnt: usize) {
+    fn rdfs(&self, st: usize, seen: &mut Vec<bool>, group: &mut Vec<usize>, cnt: usize) {
+        seen[st] = true;
         group[st] = cnt;
+
         for &nv in &self.rg[st] {
-            if group[nv] != usize::MAX {
+            if seen[nv] {
                 continue;
             }
-            self.rdfs(nv, group, cnt);
+            self.rdfs(nv, seen, group, cnt);
         }
     }
     pub fn scc(&mut self) {
@@ -58,14 +55,15 @@ impl Scc {
             self.dfs(v, &mut seen);
         }
 
+        seen.fill(false);
         let mut group = vec![usize::MAX; self.g.len()];
         let mut cnt = 0;
 
         for &v in self.kaerigake.borrow().iter().rev() {
-            if group[v] != usize::MAX {
+            if seen[v] {
                 continue;
             }
-            self.rdfs(v, &mut group, cnt);
+            self.rdfs(v, &mut seen, &mut group, cnt);
             cnt += 1;
         }
 
@@ -83,13 +81,9 @@ impl Scc {
         }
     }
 }
-
 #[cfg(test)]
 mod test {
 
-
     #[test]
-    fn refcell() {
-
-    }
+    fn refcell() {}
 }
