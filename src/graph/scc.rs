@@ -1,0 +1,95 @@
+use std::cell::RefCell;
+
+/// 強連結成分分解
+///
+/// `dag`はトポロジカル順になる
+///
+/// 少し遅いかも?
+pub struct Scc {
+    g: Vec<Vec<usize>>,
+    rg: Vec<Vec<usize>>,
+    kaerigake: RefCell<Vec<usize>>,
+    pub dag: Vec<Vec<usize>>,
+    pub group_vs: Vec<Vec<usize>>,
+}
+impl Scc {
+    pub fn new(g: Vec<Vec<usize>>) -> Self {
+        let mut rg = vec![vec![]; g.len()];
+        for v in 0..g.len() {
+            for &nv in &g[v] {
+                rg[nv].push(v);
+            }
+        }
+        Scc {
+            g,
+            rg,
+            kaerigake: RefCell::new(vec![]),
+            dag: vec![],
+            group_vs: vec![],
+        }
+    }
+    fn dfs(&self, st: usize, seen: &mut Vec<bool>) {
+        seen[st] = true;
+
+        for &nv in &self.g[st] {
+            if seen[nv] {
+                continue;
+            }
+            self.dfs(nv, seen);
+        }
+        self.kaerigake.borrow_mut().push(st);
+    }
+    fn rdfs(&self, st: usize, group: &mut Vec<usize>, cnt: usize) {
+        group[st] = cnt;
+        for &nv in &self.rg[st] {
+            if group[nv] != usize::MAX {
+                continue;
+            }
+            self.rdfs(nv, group, cnt);
+        }
+    }
+    pub fn scc(&mut self) {
+        let mut seen = vec![false; self.g.len()];
+
+        for v in 0..self.g.len() {
+            if seen[v] {
+                continue;
+            }
+            self.dfs(v, &mut seen);
+        }
+
+        let mut group = vec![usize::MAX; self.g.len()];
+        let mut cnt = 0;
+
+        for &v in self.kaerigake.borrow().iter().rev() {
+            if group[v] != usize::MAX {
+                continue;
+            }
+            self.rdfs(v, &mut group, cnt);
+            cnt += 1;
+        }
+
+        self.dag = vec![vec![]; cnt];
+        self.group_vs = vec![vec![]; cnt];
+
+        for v in 0..self.g.len() {
+            self.group_vs[group[v]].push(v);
+            for &nv in &self.g[v] {
+                if group[v] == group[nv] {
+                    continue;
+                }
+                self.dag[group[v]].push(group[nv]);
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+
+
+    #[test]
+    fn refcell() {
+
+    }
+}
