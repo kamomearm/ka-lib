@@ -64,8 +64,7 @@ impl UnionFind {
     }
     
     pub fn groupcout(&mut self) -> usize {
-        use std::collections::HashMap;
-        let mut dic: HashMap<usize, usize> = HashMap::new();
+        let mut dic: std::collections::HashMap<usize, usize> = std::collections::HashMap::new();
         for i in 0..self.v_size {
             let r = self.root(i);
             *dic.entry(r).or_default() += 1;

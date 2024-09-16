@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use cargo_snippet::snippet;
 
 #[snippet("Trie")]
@@ -7,7 +7,7 @@ struct TrieNode {
     vertex: Option<char>,
     is_finished: bool,
     common: usize,
-    next_verts: HashMap<char, TrieNode>,
+    next_verts: std::collections::HashMap<char, TrieNode>,
 }
 #[snippet("Trie")]
 
@@ -17,7 +17,7 @@ impl TrieNode {
             vertex: Some(c),
             is_finished,
             common: 0,
-            next_verts: HashMap::new(),
+            next_verts: std::collections::HashMap::new(),
         }
     }
 
@@ -26,7 +26,7 @@ impl TrieNode {
             vertex: None,
             is_finished: false,
             common: 0,
-            next_verts: HashMap::new(),
+            next_verts: std::collections::HashMap::new(),
         }
     }
 }

@@ -32,13 +32,12 @@ pub fn warshall_froyd(g: &Vec<Vec<(isize, usize)>>) {
 pub fn dijkstra(st: usize, g: &Vec<Vec<(usize, usize)>>) -> Vec<usize> {
     //! `O(|E|log|V|)`
     use std::cmp::Reverse;
-    use std::collections::BinaryHeap;
 
     let n = g.len();
     let inf: usize = 1 << 60;
     let mut kakutei = vec![false; n];
     let mut dist = vec![inf; n];
-    let mut pq = BinaryHeap::new();
+    let mut pq = std::collections::BinaryHeap::new();
 
     dist[st] = 0;
     pq.push(Reverse((dist[st], st)));
@@ -133,7 +132,6 @@ pub fn isbiparrite(g: &[Vec<usize>]) -> bool {
     //! 二部グラフか否か
     //! 
     //! `O(|V| + |E|)`
-    use std::collections::VecDeque;
     let n = g.len();
     let mut iro = vec![-1; n];
     let mut ok = true;
@@ -145,7 +143,7 @@ pub fn isbiparrite(g: &[Vec<usize>]) -> bool {
         if iro[i] != -1 {
             continue;
         }
-        let mut q = VecDeque::new();
+        let mut q = std::collections::VecDeque::new();
         q.push_back((i, 0));
         iro[i] = 0;
 
@@ -165,4 +163,24 @@ pub fn isbiparrite(g: &[Vec<usize>]) -> bool {
         }
     }
     ok
+}
+
+pub fn topological_sort(g: &[Vec<usize>], indeg: &mut [usize]) -> Vec<usize> {
+    let mut ret = vec![];
+    let mut q = std::collections::VecDeque::new();
+    for i in 0..indeg.len() {
+        if indeg[i] == 0 {
+            q.push_back(i);
+        }
+    }
+    while let Some(v) = q.pop_front() {
+        for nv in &g[v] {
+            indeg[*nv] -= 1;
+            if indeg[*nv] == 0 {
+                q.push_back(*nv);
+            }
+        }
+        ret.push(v);
+    }
+    ret
 }

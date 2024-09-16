@@ -1,12 +1,10 @@
 use cargo_snippet::snippet;
 
 #[snippet("Scc")]
-use std::cell::RefCell;
-#[snippet("Scc")]
 pub struct Scc {
     g: Vec<Vec<usize>>,
     rg: Vec<Vec<usize>>,
-    kaerigake: RefCell<Vec<usize>>,
+    kaerigake: std::cell::RefCell<Vec<usize>>,
     pub dag: Vec<Vec<usize>>,
     pub group_vs: Vec<Vec<usize>>,
 }
@@ -22,7 +20,7 @@ impl Scc {
         Scc {
             g,
             rg,
-            kaerigake: RefCell::new(vec![]),
+            kaerigake: std::cell::RefCell::new(vec![]),
             dag: vec![],
             group_vs: vec![],
         }
