@@ -1,6 +1,4 @@
-use crate::{
-    algebra::Monoid, utils::range_to_tuple
-};
+use crate::algebra::Monoid;
 use cargo_snippet::snippet;
 
 #[snippet("LazySegtree")]
@@ -50,12 +48,30 @@ impl<T: ForLazySegtree> LazySegtree<T> {
         self.lazy[i] = T::L::e();
         self.recalc_above(i);
     }
+    fn range_to_tuple<R>(range: R, r_max: usize) -> (usize, usize)
+    where
+        R: std::ops::RangeBounds<usize>,
+    {
+        use std::ops::Bound;
+        let l = match range.start_bound() {
+            Bound::Included(l) => *l,
+            Bound::Excluded(l) => l + 1,
+            Bound::Unbounded => 0,
+        };
+        let r = match range.end_bound() {
+            Bound::Included(r) => r + 1,
+            Bound::Excluded(r) => *r,
+            Bound::Unbounded => r_max,
+        };
+        (l, r)
+    }
+
     pub fn fold<R>(&mut self, range: R) -> T::M
     where
         R: std::ops::RangeBounds<usize>,
     {
         //! 区間取得 O(log N)
-        let (l, r) = range_to_tuple(range, self.original_size);
+        let (l, r) = Self::range_to_tuple(range, self.original_size);
         assert!(l < self.original_size);
         assert!(r <= self.original_size);
 
@@ -87,7 +103,7 @@ impl<T: ForLazySegtree> LazySegtree<T> {
         R: std::ops::RangeBounds<usize>,
     {
         //! 区間作用 O(log N)
-        let (l, r) = range_to_tuple(range, self.original_size);
+        let (l, r) = Self::range_to_tuple(range, self.original_size);
         let mut l = l + self.leaf_size;
         let mut r = r + self.leaf_size;
         let l0 = l / (l & (!l + 1));

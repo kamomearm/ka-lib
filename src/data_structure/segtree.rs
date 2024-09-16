@@ -1,5 +1,7 @@
 use cargo_snippet::snippet;
-use crate::{algebra::Monoid, utils::range_to_tuple};
+
+use crate::algebra::Monoid;
+// use crate::{algebra::Monoid, utils::range_to_tuple};
 
 
 #[snippet("Segtree")]
@@ -63,13 +65,30 @@ where
             self.node[idx] = self.node[idx << 1].op(&self.node[idx << 1 | 1])
         }
     }
-
+    fn range_to_tuple<R>(range: R, r_max: usize) -> (usize, usize)
+    where
+        R: std::ops::RangeBounds<usize>,
+    {
+        use std::ops::Bound;
+        let l = match range.start_bound() {
+            Bound::Included(l) => *l,
+            Bound::Excluded(l) => l + 1,
+            Bound::Unbounded => 0,
+        };
+        let r = match range.end_bound() {
+            Bound::Included(r) => r + 1,
+            Bound::Excluded(r) => *r,
+            Bound::Unbounded => r_max,
+        };
+        (l, r)
+    }
+    
     pub fn fold<R>(&self, range: R) -> T
     where
         R: std::ops::RangeBounds<usize>,
     {
         //! 区間取得 O(logN)
-        let (l, r) = range_to_tuple(range, self.original_size);
+        let (l, r) = Self::range_to_tuple(range, self.original_size);
         self.query(l, r)
     }
     fn query(&self, l: usize, r: usize) -> T {

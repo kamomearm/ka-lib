@@ -3,6 +3,8 @@ pub mod data_structure;
 pub mod utils;
 pub mod str_algo;
 pub mod compressed_mapping;
+pub mod dp;
+pub mod acc;
 
 #[cfg(test)]
 mod tests {
