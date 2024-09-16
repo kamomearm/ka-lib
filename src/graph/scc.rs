@@ -1,12 +1,16 @@
-use std::cell::RefCell;
+use cargo_snippet::snippet;
 
+#[snippet("Scc")]
+use std::cell::RefCell;
+#[snippet("Scc")]
 pub struct Scc {
-    pub g: Vec<Vec<usize>>,
-    pub rg: Vec<Vec<usize>>,
-    pub kaerigake: RefCell<Vec<usize>>,
+    g: Vec<Vec<usize>>,
+    rg: Vec<Vec<usize>>,
+    kaerigake: RefCell<Vec<usize>>,
     pub dag: Vec<Vec<usize>>,
     pub group_vs: Vec<Vec<usize>>,
 }
+#[snippet("Scc")]
 impl Scc {
     pub fn new(g: Vec<Vec<usize>>) -> Self {
         let mut rg = vec![vec![]; g.len()];
