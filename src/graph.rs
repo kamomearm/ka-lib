@@ -1,10 +1,128 @@
-pub mod unionfind;
 pub mod scc;
+pub mod unionfind;
 
 use cargo_snippet::snippet;
 use unionfind::UnionFind;
+
+pub fn cycle_detection(
+    g: &[Vec<usize>],
+    v: usize,
+    seen: &mut Vec<bool>,
+    finished: &mut Vec<bool>,
+    history: &mut Vec<usize>,
+) -> Option<usize> {
+    //! サイクルがあれば、その起点の`Some(usize)`を返す
+    //!
+    //! 有向グラフのみ
+    //! 
+    //! `O(|V| + |E|)`
+    seen[v] = true;
+    history.push(v);
+    for &nv in &g[v] {
+        if v == nv {
+            continue;
+        }
+        if finished[nv] {
+            continue;
+        }
+        if seen[nv] && !finished[nv] {
+            history.push(nv);
+            return Some(nv);
+        }
+        let pos = cycle_detection(g, nv, seen, finished, history);
+        if pos.is_some() {
+            return pos;
+        }
+    }
+    finished[v] = true;
+    history.pop();
+
+    None
+}
+
+pub fn cycle_reconstruct(pos: usize, history: &mut Vec<usize>) -> Vec<usize> {
+    //! `pos:`サイクルを検出した頂点
+    let mut cycle = vec![];
+    history.pop();
+    while let Some(v) = history.pop() {
+        cycle.push(v);
+        if v == pos {
+            break;
+        }
+    }
+    cycle.reverse();
+    cycle
+}
+
+
+// #[snippet]
+pub fn euler_tour(v: usize, g: &[Vec<usize>]) -> (Vec<usize>, Vec<usize>) {
+    //! 行きがけ順、帰りがけ順を半開区間にして出力。
+    //! 部分木に対するクエリを区間のクエリに言い換える。
+    //!
+    //! v_inの順に配列に入れて、セグ木での処理とか
+    let mut cnt = 0;
+    let mut seen = vec![false; g.len()];
+    let mut v_in = vec![0; g.len()];
+    let mut v_out = vec![0; g.len()];
+
+    // 1が行きがけ、2が帰りがけ
+    let mut stack = vec![(2, v), (1, v)];
+
+    while let Some((i, v)) = stack.pop() {
+        match i {
+            1 => {
+                seen[v] = true;
+                v_in[v] = cnt;
+                for &nv in g[v].iter().rev() {
+                    if seen[nv] {
+                        continue;
+                    }
+                    stack.push((2, nv));
+                    stack.push((1, nv));
+                }
+            }
+            2 => {
+                v_out[v] = cnt;
+            }
+            _ => unreachable!(),
+        }
+        cnt += 1;
+    }
+    (v_in, v_out)
+}
+
 #[snippet]
-pub fn warshall_froyd(g: &Vec<Vec<(isize, usize)>>) {
+pub fn dfs(v: usize, p: usize, g: &[Vec<usize>]) {
+    for nv in &g[v] {
+        if p == *nv {
+            continue;
+        }
+        dfs(*nv, p, g);
+    }
+}
+
+#[snippet]
+pub fn bfs(st: usize, g: &[Vec<usize>]) -> Vec<isize> {
+    let n = g.len();
+    let mut dist: Vec<isize> = vec![-1; n];
+    let mut q = std::collections::VecDeque::new();
+    q.push_back(st);
+    dist[st] = 0;
+    while let Some(v) = q.pop_front() {
+        for nv in &g[v] {
+            if dist[*nv] != -1 {
+                continue;
+            }
+            dist[*nv] = dist[v] + 1;
+            q.push_back(*nv);
+        }
+    }
+    dist
+}
+
+#[snippet]
+pub fn warshall_froyd(g: &[Vec<(isize, usize)>]) {
     //! 全始点最短路
     //!
     //! `(cost, nv)`のグラフ
@@ -29,8 +147,11 @@ pub fn warshall_froyd(g: &Vec<Vec<(isize, usize)>>) {
 }
 
 #[snippet]
-pub fn dijkstra(st: usize, g: &Vec<Vec<(usize, usize)>>) -> Vec<usize> {
+pub fn dijkstra(st: usize, g: &[Vec<(usize, usize)>]) -> Vec<usize> {
+    //! `(cost, nv)`の隣接リスト
+    //!
     //! `O(|E|log|V|)`
+
     use std::cmp::Reverse;
 
     let n = g.len();
@@ -43,7 +164,7 @@ pub fn dijkstra(st: usize, g: &Vec<Vec<(usize, usize)>>) -> Vec<usize> {
     pq.push(Reverse((dist[st], st)));
 
     while let Some(Reverse((_, v))) = pq.pop() {
-        if kakutei[v] == true {
+        if kakutei[v] {
             continue;
         }
 
@@ -59,7 +180,7 @@ pub fn dijkstra(st: usize, g: &Vec<Vec<(usize, usize)>>) -> Vec<usize> {
 }
 
 #[snippet]
-pub fn bellman_ford(st: usize, g: &Vec<Vec<(isize, usize)>>) -> Vec<isize> {
+pub fn bellman_ford(st: usize, g: &[Vec<(isize, usize)>]) -> Vec<isize> {
     //! `st`からの単一始点最短路を返す
     //!
     //! `(cost, nv)`のグラフ
@@ -106,10 +227,10 @@ pub fn bellman_ford(st: usize, g: &Vec<Vec<(isize, usize)>>) -> Vec<isize> {
 #[snippet]
 #[snippet(include = "Unionfind")]
 pub fn kruskal(mut e: Vec<(isize, usize, usize)>, n: usize) -> (Vec<(isize, usize, usize)>, isize) {
-    //! `(cost, v, nv)`の隣接リスト
-    //! 
     //! 最小全域木に入る辺と両端点、総コストを返す
-    //! 
+    //!
+    //! `(cost, v, nv)`の隣接リスト
+    //!
     //! `O(|E|log|E|)`
     e.sort();
     let mut uf = UnionFind::new(n);
@@ -130,7 +251,7 @@ pub fn kruskal(mut e: Vec<(isize, usize, usize)>, n: usize) -> (Vec<(isize, usiz
 // #[snippet]
 pub fn isbiparrite(g: &[Vec<usize>]) -> bool {
     //! 二部グラフか否か
-    //! 
+    //!
     //! `O(|V| + |E|)`
     let n = g.len();
     let mut iro = vec![-1; n];
@@ -150,10 +271,9 @@ pub fn isbiparrite(g: &[Vec<usize>]) -> bool {
         while let Some((v, c)) = q.pop_front() {
             for &nv in &g[v] {
                 if iro[nv] == -1 {
-                    iro[nv] = c^1;
+                    iro[nv] = c ^ 1;
                     q.push_back((nv, iro[nv]));
-                }
-                else {
+                } else {
                     if c == iro[nv] {
                         ok = false;
                         return ok;
@@ -183,4 +303,25 @@ pub fn topological_sort(g: &[Vec<usize>], indeg: &mut [usize]) -> Vec<usize> {
         ret.push(v);
     }
     ret
+}
+
+#[cfg(test)]
+mod test {
+    use crate::graph::euler_tour;
+    use itertools::Itertools;
+
+    #[test]
+    fn et() {
+        let g = vec![
+            vec![1, 5],
+            vec![0, 2, 4],
+            vec![1, 3],
+            vec![2],
+            vec![1],
+            vec![0],
+        ];
+        let (v_in, v_out) = euler_tour(0, &g);
+        println!("{}", v_in.iter().join("\t"));
+        println!("{}", v_out.iter().join("\t"));
+    }
 }

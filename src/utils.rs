@@ -26,6 +26,50 @@ pub fn is_palindrome<T: Ord>(s: &[T]) -> bool {
     true
 }
 
+/// from sansen
+/// 
+/// <https://judge.yosupo.jp/submission/15446>
+// ---------- begin Scanner(require delimiter) ----------
+pub mod scanner {
+    pub struct Scanner<R> {
+        reader: R,
+        buf: Vec<u8>,
+    }
+    #[allow(dead_code)]
+    impl<R: std::io::BufRead> Scanner<R> {
+        pub fn new(reader: R) -> Self {
+            Scanner {
+                reader: reader,
+                buf: Vec::with_capacity(1024),
+            }
+        }
+        fn read(&mut self, del: u8) {
+            self.buf.clear();
+            self.reader.read_until(del, &mut self.buf).ok();
+            assert!(self.buf.pop().unwrap() == del);
+        }
+        pub fn next<T: std::str::FromStr>(&mut self, del: u8) -> T {
+            self.read(del);
+            std::str::from_utf8(&self.buf)
+                .unwrap()
+                .trim()
+                .parse::<T>()
+                .ok()
+                .unwrap()
+        }
+        pub fn next_bytes(&mut self, del: u8) -> Vec<u8> {
+            self.read(del);
+            std::str::from_utf8(&self.buf)
+                .unwrap()
+                .trim()
+                .bytes()
+                .collect()
+        }
+    }
+}
+// ---------- end scanner(require delimiter) ----------
+
+
 #[cfg(test)]
 mod tests {
     use crate::utils::is_palindrome;
