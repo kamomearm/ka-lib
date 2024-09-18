@@ -37,6 +37,7 @@ use cargo_snippet::snippet;
 //     }
 // }
 
+
 pub fn is_palindrome<T: Ord>(s: &[T]) -> bool {
     for i in 0..s.len() / 2 {
         if s[i] != s[s.len() - i - 1] {
@@ -47,7 +48,7 @@ pub fn is_palindrome<T: Ord>(s: &[T]) -> bool {
 }
 
 /// from sansen
-/// 
+///
 /// <https://judge.yosupo.jp/submission/15446>
 // ---------- begin Scanner(require delimiter) ----------
 pub mod scanner {
@@ -89,16 +90,16 @@ pub mod scanner {
 }
 // ---------- end scanner(require delimiter) ----------
 
-
 #[snippet("CompMap")]
 #[derive(Debug)]
 pub struct CompMap<T> {
-    original: Vec<T>
+    original: Vec<T>,
 }
 #[snippet("CompMap")]
-impl <T> CompMap<T> 
-where T: Clone+Ord {
-    
+impl<T> CompMap<T>
+where
+    T: Clone + Ord,
+{
     pub fn new() -> Self {
         CompMap { original: vec![] }
     }
@@ -106,7 +107,7 @@ where T: Clone+Ord {
         self.original.push(x);
     }
     pub fn push_vec(&mut self, x: &[T]) {
-            for i in x {
+        for i in x {
             self.push(i.clone());
         }
     }
@@ -131,17 +132,25 @@ where T: Clone+Ord {
         let n = self.original.len();
         let mut ng = -1;
         let mut ok = n as isize;
-    
-        while ok-ng > 1 {
-            let mid = (ok+ng)/2;
+
+        while ok - ng > 1 {
+            let mid = (ok + ng) / 2;
             if *x <= self.original[mid as usize] {
-                ok = mid as isize;
-            }
-            else {
-                ng = mid as isize;
+                ok = mid;
+            } else {
+                ng = mid;
             }
         }
         ok as usize
+    }
+}
+#[snippet("CompMap")]
+impl<T> Default for CompMap<T>
+where
+    T: Clone + Ord,
+{
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -150,8 +159,7 @@ pub fn is_good_bracket_str(s: &[char]) -> bool {
     for &si in s {
         if si == '(' {
             depth += 1;
-        }
-        else {
+        } else {
             depth -= 1;
         }
         if depth < 0 {
@@ -167,8 +175,6 @@ pub fn is_good_bracket_str(s: &[char]) -> bool {
 #[cfg(test)]
 mod tests {
     use crate::utils::is_palindrome;
-
-
 
     #[test]
     fn it_works() {

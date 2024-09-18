@@ -1,6 +1,7 @@
 use cargo_snippet::snippet;
 
-use crate::algebra::Monoid;
+use crate::traits::Monoid;
+
 // use crate::{algebra::Monoid, utils::range_to_tuple};
 
 

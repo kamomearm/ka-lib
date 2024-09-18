@@ -14,7 +14,7 @@ pub fn cycle_detection(
     //! サイクルがあれば、その起点の`Some(usize)`を返す
     //!
     //! 有向グラフのみ
-    //! 
+    //!
     //! `O(|V| + |E|)`
     seen[v] = true;
     history.push(v);
@@ -42,7 +42,7 @@ pub fn cycle_detection(
 
 pub fn cycle_reconstruct(pos: usize, history: &mut Vec<usize>) -> Vec<usize> {
     //! `pos:`サイクルを検出した頂点
-    //! 
+    //!
     //! `pos`からのサイクルに含まれる頂点をサイクルの順に返す
     let mut cycle = vec![];
     history.pop();
@@ -55,7 +55,6 @@ pub fn cycle_reconstruct(pos: usize, history: &mut Vec<usize>) -> Vec<usize> {
     cycle.reverse();
     cycle
 }
-
 
 // #[snippet]
 pub fn euler_tour(v: usize, g: &[Vec<usize>]) -> (Vec<usize>, Vec<usize>) {
@@ -151,9 +150,9 @@ pub fn warshall_froyd(g: &[Vec<(isize, usize)>]) {
 #[snippet]
 pub fn dijkstra(st: usize, g: &[Vec<(usize, usize)>]) -> Vec<usize> {
     //! 単一始点最短路を求める
-    //! 
+    //!
     //! `(cost, nv)`の隣接リストを要求
-    //! 
+    //!
     //! `O(|E|log|V|)`
 
     use std::cmp::Reverse;
@@ -277,11 +276,9 @@ pub fn isbiparrite(g: &[Vec<usize>]) -> bool {
                 if iro[nv] == -1 {
                     iro[nv] = c ^ 1;
                     q.push_back((nv, iro[nv]));
-                } else {
-                    if c == iro[nv] {
-                        ok = false;
-                        return ok;
-                    }
+                } else if c == iro[nv] {
+                    ok = false;
+                    return ok;
                 }
             }
         }

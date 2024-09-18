@@ -1,5 +1,6 @@
-use crate::algebra::Monoid;
 use cargo_snippet::snippet;
+
+use crate::traits::Monoid;
 
 #[snippet("LazySegtree")]
 pub trait ForLazySegtree {

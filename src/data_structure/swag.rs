@@ -1,7 +1,9 @@
-use crate::algebra::Monoid;
-use cargo_snippet::snippet;
 
-#[snippet("Swag")]
+// use cargo_snippet::snippet;
+
+use crate::traits::Monoid;
+
+// #[snippet("Swag")]
 /// 非可換な演算もできるswag
 #[derive(Debug)]
 pub struct Swag<T>
@@ -12,7 +14,7 @@ where
     back: Vec<T>,
     back_raw: Vec<T>,
 }
-#[snippet("Swag")]
+// #[snippet("Swag")]
 
 impl<T> Swag<T>
 where
@@ -30,7 +32,7 @@ where
             self.front.push(x);
         } else {
             let vi = &self.front[self.front.len() - 1];
-            self.front.push(x.op(&vi));
+            self.front.push(x.op(vi));
         }
     }
     fn add_back(&mut self, x: T) {
@@ -70,26 +72,40 @@ where
         self.front[self.front.len() - 1].op(&self.back[self.back.len() - 1])
     }
 }
+// #[snippet("Swag")]
+impl<T> Default for Swag<T>
+where
+    T: Monoid + Clone,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::{algebra::Monoid, data_structure::swag::Swag};
+    use crate::{data_structure::swag::Swag, traits::Monoid};
+
+
 
     #[test]
     fn it_works() {
         #[derive(Debug, Clone, Copy)]
         struct Min {
-            val: usize
+            val: usize,
         }
         impl Monoid for Min {
             fn op(&self, right: &Min) -> Min {
-                Min { val: self.val.min(right.val) }
+                Min {
+                    val: self.val.min(right.val),
+                }
             }
             fn e() -> Min {
                 Min { val: usize::MAX }
             }
         }
         let mut swag = Swag::<Min>::new();
-        let v = (0..6).map(|i| Min {val: i}).collect::<Vec<Min>>();
+        let v = (0..6).map(|i| Min { val: i }).collect::<Vec<Min>>();
         for i in &v {
             swag.push_back(i.clone());
             println!("{:?}", &swag.front);

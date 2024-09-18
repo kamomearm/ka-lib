@@ -43,7 +43,7 @@ pub struct RollingHsh {
 }
 
 impl RollingHsh {
-    pub fn new(v: &Vec<char>) -> Self {
+    pub fn new(v: &[char]) -> Self {
         use rand::Rng;
         let modulo: i128 = (1<<61) -1 ;
 

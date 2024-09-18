@@ -16,7 +16,7 @@ pub fn lcm(a: usize, b: usize) -> usize {
 #[snippet("modinv")]
 pub fn modinv(mut a: isize, m: isize) -> isize {
     //! `a mod m`の逆元
-    //! 
+    //!
     //! `a`と`m`の互いが素を仮定
     let mut b = m;
     let mut u = 1;
@@ -92,7 +92,7 @@ pub fn is_prime(n: usize) -> bool {
 }
 pub fn factorize(n: usize) -> Vec<(usize, usize)> {
     //! `n`の素因数分解
-    //! 
+    //!
     //! 整数での試し割法
     let mut ret = vec![];
     let mut m = n;
@@ -143,7 +143,7 @@ pub fn factorize_by_minfactor(mut n: usize, minfactor: &[usize]) -> Vec<(usize, 
     //! `O(logN)`
     let mut ret = Vec::new();
     while n > 1 {
-        let p = minfactor[n as usize];
+        let p = minfactor[n];
         let mut exp = 0;
         while minfactor[n] == p {
             n /= p;
@@ -176,6 +176,20 @@ pub fn get_minfactor(n: usize) -> Vec<usize> {
         }
     }
     minfactor
+}
+
+pub fn pow_mod(mut base: isize, mut exp: usize, r#mod: usize) -> usize {
+    let mut ans = 1;
+    while exp > 0 {
+        if exp & 1 == 1 {
+            ans *= base;
+            ans = ans.rem_euclid(r#mod.try_into().unwrap());
+        }
+        base *= base;
+        base = base.rem_euclid(r#mod.try_into().unwrap());
+        exp = exp.div_euclid(2);
+    }
+    ans as usize
 }
 
 #[cfg(test)]

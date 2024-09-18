@@ -66,11 +66,8 @@ impl Trie {
             current_node.common += 1;
             if current_node.next_verts.contains_key(c) {
                 current_node = current_node.next_verts.get_mut(c).unwrap();
-            } 
-            else {
-                current_node
-                    .next_verts
-                    .insert(*c, TrieNode::new(*c, false));
+            } else {
+                current_node.next_verts.insert(*c, TrieNode::new(*c, false));
                 current_node = current_node.next_verts.get_mut(c).unwrap();
             }
         }
@@ -97,15 +94,19 @@ impl Trie {
                 current_node = current_node.next_verts.get_mut(c).unwrap();
                 if current_node.common >= 2 {
                     ret += 1
-                }
-                else {
+                } else {
                     break;
                 }
-            }
-            else {
+            } else {
                 break;
             }
         }
         ret
+    }
+}
+#[snippet("Trie")]
+impl Default for Trie {
+    fn default() -> Self {
+        Self::new()
     }
 }
