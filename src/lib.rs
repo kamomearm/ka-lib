@@ -1,6 +1,5 @@
 pub mod acc;
 pub mod algebra;
-pub mod compressed_mapping;
 pub mod data_structure;
 pub mod dp;
 pub mod graph;

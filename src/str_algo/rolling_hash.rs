@@ -9,12 +9,14 @@ mod tests {
         let v = vec!['a', 'b', 'c', 'a', 'b', 'c'];
         let r = RollingHsh::new(&v);
         let a = r.get_hash(0..=2);
+        eprintln!("{}", a);
         let b = r.get_hash(3..=5);
+        eprintln!("{}", b);
         assert_eq!(a, b);
     }
     fn tessoku_a56() {
         input! {
-            n: usize,
+            _: usize,
             q: usize,
             s: Chars
         }
@@ -93,4 +95,3 @@ impl RollingHsh {
         (l, r)
     }
 }
-

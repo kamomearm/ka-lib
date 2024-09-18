@@ -175,3 +175,12 @@ pub fn get_minfactor(n: usize) -> Vec<usize> {
     }
     minfactor
 }
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn from_str_radix() {
+        let s = "101";
+        assert_eq!(10, u8::from_str_radix(s, 3).unwrap());
+    }
+}
