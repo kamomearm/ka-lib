@@ -1,4 +1,3 @@
-pub mod acc;
 pub mod algebra;
 pub mod data_structure;
 pub mod dp;
