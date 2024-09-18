@@ -42,6 +42,8 @@ pub fn cycle_detection(
 
 pub fn cycle_reconstruct(pos: usize, history: &mut Vec<usize>) -> Vec<usize> {
     //! `pos:`サイクルを検出した頂点
+    //! 
+    //! `pos`からのサイクルに含まれる頂点をサイクルの順に返す
     let mut cycle = vec![];
     history.pop();
     while let Some(v) = history.pop() {
@@ -125,7 +127,7 @@ pub fn bfs(st: usize, g: &[Vec<usize>]) -> Vec<isize> {
 pub fn warshall_froyd(g: &[Vec<(isize, usize)>]) {
     //! 全始点最短路
     //!
-    //! `(cost, nv)`のグラフ
+    //! `(cost, nv)`のの隣接リスト
     //!
     //! `O(|V|^3)`
 
@@ -148,8 +150,10 @@ pub fn warshall_froyd(g: &[Vec<(isize, usize)>]) {
 
 #[snippet]
 pub fn dijkstra(st: usize, g: &[Vec<(usize, usize)>]) -> Vec<usize> {
-    //! `(cost, nv)`の隣接リスト
-    //!
+    //! 単一始点最短路を求める
+    //! 
+    //! `(cost, nv)`の隣接リストを要求
+    //! 
     //! `O(|E|log|V|)`
 
     use std::cmp::Reverse;
@@ -183,9 +187,9 @@ pub fn dijkstra(st: usize, g: &[Vec<(usize, usize)>]) -> Vec<usize> {
 pub fn bellman_ford(st: usize, g: &[Vec<(isize, usize)>]) -> Vec<isize> {
     //! `st`からの単一始点最短路を返す
     //!
-    //! `(cost, nv)`のグラフ
+    //! `(cost, nv)`の隣接リストを要求
     //!
-    //! 不閉路になるものは`-inf`にして、返す
+    //! 不閉路になるものは`-inf`にして返す
     //!
     //! `O(|V| |E|)`
     let n = g.len();

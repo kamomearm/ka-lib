@@ -34,7 +34,7 @@ pub fn modinv(mut a: isize, m: isize) -> isize {
 }
 
 pub fn get_divisors(n: usize) -> Vec<usize> {
-    //! 約数の取得
+    //! `n`の約数の取得
     let mut ret = vec![];
     for i in 1..=n {
         if i * i > n {
@@ -69,7 +69,7 @@ pub fn divisors_num(n: usize) -> usize {
     ret
 }
 pub fn divisors_num_range(n: usize) -> Vec<usize> {
-    //! `n`以下の正整数の約数の個数
+    //! `..=n`について約数の個数を求める
     let mut ret = vec![0; n + 1];
     for i in 1..=n {
         for j in (i..=n).step_by(i) {
@@ -91,6 +91,8 @@ pub fn is_prime(n: usize) -> bool {
     true
 }
 pub fn factorize(n: usize) -> Vec<(usize, usize)> {
+    //! `n`の素因数分解
+    //! 
     //! 整数での試し割法
     let mut ret = vec![];
     let mut m = n;
@@ -136,7 +138,7 @@ pub fn eratostenes_thive(n: usize) -> Vec<bool> {
     isprime
 }
 pub fn factorize_by_minfactor(mut n: usize, minfactor: &[usize]) -> Vec<(usize, usize)> {
-    //! `n`について素因数分解
+    //! 最小素因数を用いて`n`について素因数分解
     //!
     //! `O(logN)`
     let mut ret = Vec::new();
@@ -152,7 +154,7 @@ pub fn factorize_by_minfactor(mut n: usize, minfactor: &[usize]) -> Vec<(usize, 
     ret
 }
 pub fn get_minfactor(n: usize) -> Vec<usize> {
-    //! `..=n`について、最小の素因数を求める
+    //! `..=n`について、最小素因数を求める
     //!
     //! `O(NloglogN)`
     let mut isprime = vec![true; n + 1];

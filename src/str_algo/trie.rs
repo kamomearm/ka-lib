@@ -9,8 +9,8 @@ struct TrieNode {
     common: usize,
     next_verts: std::collections::HashMap<char, TrieNode>,
 }
-#[snippet("Trie")]
 
+#[snippet("Trie")]
 impl TrieNode {
     fn new(c: char, is_finished: bool) -> TrieNode {
         TrieNode {
@@ -30,14 +30,14 @@ impl TrieNode {
         }
     }
 }
-#[snippet("Trie")]
 
+#[snippet("Trie")]
 #[derive(Debug, Clone)]
 pub struct Trie {
     root: TrieNode,
 }
-#[snippet("Trie")]
 
+#[snippet("Trie")]
 impl Trie {
     pub fn new() -> Trie {
         Trie {
