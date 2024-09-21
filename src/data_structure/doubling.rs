@@ -76,10 +76,7 @@ impl Doubling for UnWeightDoubling {
 
         for k in 0..k - 1 {
             for i in 0..v.len() {
-                match table[k][i] {
-                    Some(val) => table[k + 1][i] = table[k][val],
-                    None => table[k + 1][i] = None,
-                }
+                table[k][i].map(|val| table[k + 1][i] = table[k][val]);
             }
         }
 
@@ -106,7 +103,5 @@ impl Doubling for UnWeightDoubling {
 mod test {
 
     #[test]
-    fn it_work() {
-        
-    }
+    fn it_work() {}
 }
