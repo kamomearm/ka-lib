@@ -98,7 +98,23 @@ impl Doubling for UnWeightDoubling {
         self.table[0][idx] = x;
     }
 }
+impl UnWeightDoubling {
+    pub fn query_vec(&self, k: usize) -> Vec<Option<usize>> {
+        let mut ret = (0..self.table[0].len())
+            .map(|i| Some(i))
+            .collect::<Vec<Option<usize>>>();
+        for i in 0..self.table.len() {
+            if k >>i & 1 == 1 {
+                ret = ret
+                    .iter()
+                    .map(|j| self.table[i][j.unwrap()])
+                    .collect::<Vec<Option<usize>>>();
+            }
+        }
+        ret
+    }
 
+}
 #[cfg(test)]
 mod test {
 

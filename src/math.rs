@@ -192,11 +192,109 @@ pub fn pow_mod(mut base: isize, mut exp: usize, r#mod: usize) -> usize {
     ans as usize
 }
 
+#[snippet("NRadixFrom")]
+pub trait NRadixFrom {
+    /// 10進法から任意の進法へのコンバート
+    /// 
+    /// n進法から10進法へは、from_str_radixを使う
+    fn n_radix_from(&self, n: u64) -> Vec<u64>;
+}
+#[snippet("NRadixFrom")]
+impl NRadixFrom for String {
+    fn n_radix_from(&self, n: u64) -> Vec<u64> {
+        self.chars().collect::<Vec<char>>().n_radix_from(n)
+    }
+}
+#[snippet("NRadixFrom")]
+impl NRadixFrom for &str {
+    fn n_radix_from(&self, n: u64) -> Vec<u64> {
+        self.chars().collect::<Vec<char>>().n_radix_from(n)
+    }
+}
+#[snippet("NRadixFrom")]
+impl NRadixFrom for [char] {
+    fn n_radix_from(&self, n: u64) -> Vec<u64> {
+        let mut a = 0;
+        for c in self.iter() {
+            a *= 10;
+            a += c.to_digit(10).unwrap() as usize;
+        }
+        a.n_radix_from(n)
+    }
+}
+#[snippet("NRadixFrom")]
+impl NRadixFrom for usize {
+    fn n_radix_from(&self, n: u64) -> Vec<u64> {
+        let x = self.clone() as u64;
+        x.n_radix_from(n)
+    }
+}
+#[snippet("NRadixFrom")]
+impl NRadixFrom for u8 {
+    fn n_radix_from(&self, n: u64) -> Vec<u64> {
+        let x = self.clone() as usize;
+        x.n_radix_from(n)
+    }
+}
+#[snippet("NRadixFrom")]
+impl NRadixFrom for u16 {
+    fn n_radix_from(&self, n: u64) -> Vec<u64> {
+        let x = self.clone() as usize;
+        x.n_radix_from(n)
+    }
+}
+#[snippet("NRadixFrom")]
+impl NRadixFrom for u32 {
+    fn n_radix_from(&self, n: u64) -> Vec<u64> {
+        let x = self.clone() as usize;
+        x.n_radix_from(n)
+    }
+}
+#[snippet("NRadixFrom")]
+impl NRadixFrom for u64 {
+    fn n_radix_from(&self, n: u64) -> Vec<u64> {
+        let mut ret = vec![];
+        let mut x = self.clone();
+        let n = n as u64;
+        while 0 < x {
+            let t = x%n;
+            ret.push(t);
+            x /= n;
+        }
+        ret.reverse();
+        ret
+    }
+}
+#[snippet("NRadixFrom")]
+impl NRadixFrom for u128 {
+    fn n_radix_from(&self, n: u64) -> Vec<u64> {
+        let n = n as u128;
+        let mut ret = vec![];
+        let mut x = self.clone();
+        while 0 < x {
+            let t = x%n;
+            ret.push(t as u64);
+            x /= n;
+        }
+        ret.reverse();
+        ret
+    }
+}
 #[cfg(test)]
 mod test {
+    use super::NRadixFrom;
     #[test]
     fn from_str_radix() {
         let s = "101";
         assert_eq!(10, u8::from_str_radix(s, 3).unwrap());
+
+        assert_eq!(vec![1, 0], 2usize.n_radix_from(2));
+
+        let v = vec!['2'];
+        assert_eq!(vec![1, 0], v.n_radix_from(2));
+        
+        assert_eq!(vec![1, 0], "2".n_radix_from(2));
+
+        
     }
 }
