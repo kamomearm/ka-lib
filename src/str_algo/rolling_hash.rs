@@ -14,6 +14,7 @@ mod tests {
         eprintln!("{}", b);
         assert_eq!(a, b);
     }
+    #[allow(dead_code)]
     fn tessoku_a56() {
         input! {
             _: usize,
