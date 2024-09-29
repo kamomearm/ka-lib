@@ -1,5 +1,7 @@
 use cargo_snippet::snippet;
 
+use crate::traits::CommutaitveGroup;
+
 pub struct PotentialedUnionFind {
     len: usize,
     par: Vec<usize>,
@@ -47,6 +49,86 @@ impl PotentialedUnionFind {
         if self.size[x] < self.size[y] {
             std::mem::swap(&mut x, &mut y);
             w = -w;
+        }
+        self.par[y] = x;
+        self.size[x] += self.size[y];
+        self.diff_weight[y] = w;
+
+        true
+    }
+    pub fn size(&mut self, x: usize) -> usize {
+        let r = self.root(x);
+        self.size[r]
+    }
+    pub fn issame(&mut self, x: usize, y: usize) -> bool {
+        self.root(x) == self.root(y)
+    }
+    pub fn group_count(&mut self) -> usize {
+        //!  `UnionFind`内の集合の数を返す
+        //!
+        //! `O(Nα(N)) `
+        let mut cnt = vec![0; self.len];
+        for i in 0..self.len {
+            cnt[self.root(i)] += 1;
+        }
+        cnt.iter().filter(|&&i| 0 < i).count()
+    }
+}
+
+pub struct AbelPotentialedUnionFind<T> {
+    len: usize,
+    par: Vec<usize>,
+    size: Vec<usize>,
+    diff_weight: Vec<T>,
+}
+impl<T> AbelPotentialedUnionFind<T>
+where
+    T: CommutaitveGroup + Clone,
+{
+    pub fn new(n: usize) -> Self {
+        AbelPotentialedUnionFind {
+            len: n,
+            par: (0..n).collect(),
+            size: vec![0; n],
+            diff_weight: vec![T::e(); n],
+        }
+    }
+    pub fn root(&mut self, x: usize) -> usize {
+        if self.par[x] == x {
+            x
+        } else {
+            let r = self.root(self.par[x]);
+            self.diff_weight[x] = self.diff_weight[x].op(&self.diff_weight[self.par[x]]);
+            self.par[x] = r;
+            r
+        }
+    }
+    pub fn weight(&mut self, x: usize) -> T {
+        self.root(x);
+        self.diff_weight[x].clone()
+    }
+    pub fn diff(&mut self, x: usize, y: usize) -> T {
+        //! `x`と`y`の差
+        let x = self.weight(x);
+        let y = self.weight(y).inv();
+        x.op(&y)
+    }
+    pub fn unite(&mut self, x: usize, y: usize, w: T) -> bool {
+        //! `weight(y) - weight(x) == w`となるようにunite
+        let mut w = w;
+        // w += self.weight(x);
+        w = w.op(&self.weight(x));
+        // w -= self.weight(y);
+        w = w.op(&self.weight(y).inv());
+
+        let mut x = self.root(x);
+        let mut y = self.root(y);
+        if x == y {
+            return false;
+        }
+        if self.size[x] < self.size[y] {
+            std::mem::swap(&mut x, &mut y);
+            w = w.inv();
         }
         self.par[y] = x;
         self.size[x] += self.size[y];

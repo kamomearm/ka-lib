@@ -28,9 +28,9 @@ pub trait E {
 }
 pub trait Inv {
     /// 二項演算の逆元
-    fn inv() -> Self;
+    fn inv(&self) -> Self;
 }
-pub trait Commutative: Biop {}
+pub trait Commutative: {}
 
 pub trait CommutaitveGroup: Monoid + Inv + Commutative {}
 pub trait Group: Monoid + Inv {}
