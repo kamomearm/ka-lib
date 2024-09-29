@@ -51,7 +51,25 @@ impl PotentialedUnionFind {
         self.par[y] = x;
         self.size[x] += self.size[y];
         self.diff_weight[y] = w;
+
         true
+    }
+    pub fn size(&mut self, x: usize) -> usize {
+        let r = self.root(x);
+        self.size[r]
+    }
+    pub fn issame(&mut self, x:usize, y:usize) -> bool {
+        self.root(x) == self.root(y)
+    }
+    pub fn group_count(&mut self) -> usize {
+        //!  `UnionFind`内の集合の数を返す
+        //!
+        //! `O(Nα(N)) `
+        let mut cnt = vec![0; self.len];
+        for i in 0..self.len {
+            cnt[self.root(i)] += 1;
+        }
+        cnt.iter().filter(|&&i| 0 < i).count()
     }
 }
 
