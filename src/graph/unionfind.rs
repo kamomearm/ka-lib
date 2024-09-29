@@ -58,7 +58,7 @@ impl PotentialedUnionFind {
         let r = self.root(x);
         self.size[r]
     }
-    pub fn issame(&mut self, x:usize, y:usize) -> bool {
+    pub fn issame(&mut self, x: usize, y: usize) -> bool {
         self.root(x) == self.root(y)
     }
     pub fn group_count(&mut self) -> usize {
@@ -76,7 +76,7 @@ impl PotentialedUnionFind {
 #[snippet("UnionFind")]
 pub struct UnionFind {
     len: usize,
-    par: Vec<i64>,
+    par: Vec<usize>,
     size: Vec<usize>,
     // edgecount: Vec<usize>,
 }
@@ -85,18 +85,18 @@ impl UnionFind {
     pub fn new(n: usize) -> Self {
         UnionFind {
             len: n,
-            par: vec![-1; n],
+            par: (0..n).collect(),
             size: vec![1; n],
             // edgecount: vec![0; n],
         }
     }
 
     pub fn root(&mut self, x: usize) -> usize {
-        if self.par[x] == -1 {
+        if self.par[x] == x {
             x
         } else {
-            self.par[x] = self.root(self.par[x] as usize) as i64;
-            self.par[x] as usize
+            self.par[x] = self.root(self.par[x]);
+            self.par[x]
         }
     }
 
@@ -109,7 +109,7 @@ impl UnionFind {
         if self.size[x] < self.size[y] {
             std::mem::swap(&mut x, &mut y);
         }
-        self.par[y] = x as i64;
+        self.par[y] = x;
         self.size[x] += self.size[y];
         true
     }
