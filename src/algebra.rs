@@ -1,16 +1,13 @@
 use crate::traits::Monoid;
 
 #[derive(Debug, Clone, Copy)]
-struct ZobHshP {
-    hash: u128
-}
+struct ZobHshP;
 impl Monoid for ZobHshP {
-    fn op(&self, right: &ZobHshP) -> ZobHshP {
-        let l = self.hash;
-        let r = right.hash;
-        ZobHshP { hash: l+r }
+    fn e() -> Self::S {
+        0
     }
-    fn e() -> ZobHshP {
-        ZobHshP { hash: 0 }
+    fn op(left: &Self::S,right: &Self::S) -> Self::S {
+        left+right
     }
+    type S = u128;
 }
