@@ -1,13 +1,16 @@
 use crate::traits::{Doubling, Monoid};
 
-pub struct WeightDoubling<T> {
-    table: Vec<Vec<Option<(usize, T)>>>,
-}
-impl<M> Doubling for WeightDoubling<M>
-where
-    M: Monoid + Clone,
+pub struct WeightDoubling<T> 
+where 
+    T: Monoid    
 {
-    type D = Option<(usize, M)>;
+    table: Vec<Vec<Option<(usize, T::S)>>>,
+}
+impl<T> Doubling for WeightDoubling<T>
+where
+    T: Monoid,
+{
+    type D = Option<(usize, T::S)>;
     fn new(v: &[Self::D], k: usize) -> Self {
         //! `ターンの最大値 <= 2^kとなるk`
         let mut table = vec![vec![None; v.len()]; k];
@@ -21,7 +24,7 @@ where
                     Some((p, m)) => {
                         let nval = table[k][*p].clone();
                         match nval {
-                            Some((np, nm)) => table[k + 1][i] = Some((np, m.op(&nm))),
+                            Some((np, nm)) => table[k + 1][i] = Some((np, T::op(&m, &nm))),
                             None => table[k + 1][i] = None,
                         }
                     }
@@ -32,17 +35,21 @@ where
         WeightDoubling { table }
     }
     fn query(&self, k: usize, idx: usize) -> Self::D {
-        let mut m = M::e();
+        let mut m = T::e();
         let mut x = idx;
         for i in 0..=self.table.len() {
             if k >> i & 1 == 1 {
-                match &self.table[i][x] {
-                    Some((nx, nm)) => {
-                        x = nx.clone();
-                        m = m.op(nm);
-                    }
-                    None => return None,
-                }
+                // match &self.table[i][x] {
+                //     Some((nx, nm)) => {
+                //         x = nx.clone();
+                //         // m = m.op(nm);
+                //         m = T::op(&m, &nm);
+                //     }
+                //     None => return None,
+                // }
+                let (nx, nm) = self.table[i][x]?;
+                x = nx;
+                m = T::op(&m, &nm);
             }
         }
         Some((x, m))
@@ -68,7 +75,7 @@ impl Doubling for UnWeightDoubling {
 
         for k in 0..k - 1 {
             for i in 0..v.len() {
-                table[k][i].map(|val| table[k + 1][i] = table[k][val]);
+                // table[k][i].map(|val| table[k + 1][i] = table[k][val]);
             }
         }
 
@@ -78,10 +85,11 @@ impl Doubling for UnWeightDoubling {
         let mut x = idx;
         for i in 0..=self.table.len() {
             if k >> i & 1 == 1 {
-                match self.table[i][x] {
-                    Some(nx) => x = nx,
-                    None => return None,
-                }
+                // match self.table[i][x] {
+                //     Some(nx) => x = nx,
+                //     None => return None,
+                // }
+                let x = self.table[i][x]?;
             }
         }
         Some(x)
