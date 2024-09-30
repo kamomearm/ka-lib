@@ -1,5 +1,4 @@
-use cargo_snippet::snippet; 
-
+use cargo_snippet::snippet;
 
 /// 位置`p`から`k`ターン先の行き先を求める
 pub trait Doubling {
@@ -23,8 +22,6 @@ pub trait Monoid {
     fn e() -> Self::S;
 }
 
-
-
 pub trait Biop {
     /// 二項演算
     fn op(&self, right: &Self) -> Self;
@@ -38,7 +35,7 @@ pub trait Inv {
     /// 二項演算の逆元
     fn inv(&self) -> Self;
 }
-pub trait Commutative: {}
+pub trait Commutative {}
 
 pub trait CommutaitveGroup: Monoid + Inv + Commutative {}
 pub trait Group: Monoid + Inv {}

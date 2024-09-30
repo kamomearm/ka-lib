@@ -1,7 +1,5 @@
 use crate::traits::{Doubling, Monoid};
 
-
-
 pub struct WeightDoubling<T> {
     table: Vec<Vec<Option<(usize, T)>>>,
 }
@@ -98,7 +96,7 @@ impl UnWeightDoubling {
             .map(|i| Some(i))
             .collect::<Vec<Option<usize>>>();
         for i in 0..self.table.len() {
-            if k >>i & 1 == 1 {
+            if k >> i & 1 == 1 {
                 ret = ret
                     .iter()
                     .map(|j| self.table[i][j.unwrap()])
@@ -107,7 +105,6 @@ impl UnWeightDoubling {
         }
         ret
     }
-
 }
 #[cfg(test)]
 mod test {

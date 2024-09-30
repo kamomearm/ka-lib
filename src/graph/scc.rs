@@ -1,7 +1,7 @@
 use cargo_snippet::snippet;
 
 /// 強連結成分分解を行う
-/// 
+///
 /// `O(|V| + |E|)`
 #[snippet("Scc")]
 pub struct Scc {

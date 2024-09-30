@@ -4,8 +4,7 @@ use cargo_snippet::snippet;
 
 #[cfg(test)]
 mod test {
-    fn it_eq() {
-    }
+    fn it_eq() {}
 }
 
 #[snippet("Segtree")]
@@ -234,8 +233,6 @@ where
         0
     }
 }
-
-
 
 // #[snippet("Segtree")]
 // #[derive(Debug)]

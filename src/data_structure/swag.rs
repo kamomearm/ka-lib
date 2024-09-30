@@ -1,4 +1,3 @@
-
 // use cargo_snippet::snippet;
 
 use crate::traits::Monoid;
@@ -70,7 +69,10 @@ where
             return self.front[self.front.len() - 1].clone();
         }
         // self.front[self.front.len() - 1].op(&self.back[self.back.len() - 1])
-        T::op(&self.front[self.front.len()-1], &self.back[self.back.len()-1])
+        T::op(
+            &self.front[self.front.len() - 1],
+            &self.back[self.back.len() - 1],
+        )
     }
 }
 // #[snippet("Swag")]
@@ -90,14 +92,13 @@ mod tests {
     #[test]
     fn it_works() {
         #[derive(Debug, Clone, Copy)]
-        struct Min {
-        }
+        struct Min {}
         impl Monoid for Min {
             type S = usize;
             fn e() -> Self::S {
                 0
             }
-            fn op(left: &Self::S,right: &Self::S) -> Self::S {
+            fn op(left: &Self::S, right: &Self::S) -> Self::S {
                 left.min(right).clone()
             }
         }

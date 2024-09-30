@@ -20,13 +20,11 @@ pub struct TreapNode<T> {
 }
 pub struct Treap<T> {
     root: Option<Rc<TreapNode<T>>>,
-    size: usize
+    size: usize,
 }
 impl<T> Treap<T> {
     fn rotate_right(u: TreapNode<T>) {
         let mut w = u.right.borrow_mut().take().unwrap();
         *w.parent.borrow_mut() = u.parent.borrow_mut().take();
-        
-        
     }
 }

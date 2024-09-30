@@ -1,2 +1,2 @@
-pub mod trie;
 pub mod rolling_hash;
+pub mod trie;

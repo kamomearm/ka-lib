@@ -195,7 +195,7 @@ pub fn pow_mod(mut base: isize, mut exp: usize, r#mod: usize) -> usize {
 #[snippet("NRadixFrom")]
 pub trait NRadixFrom {
     /// 10進法から任意の進法へのコンバート
-    /// 
+    ///
     /// n進法から10進法へは、from_str_radixを使う
     fn n_radix_from(&self, n: u64) -> Vec<u64>;
 }
@@ -257,7 +257,7 @@ impl NRadixFrom for u64 {
         let mut x = self.clone();
         let n = n as u64;
         while 0 < x {
-            let t = x%n;
+            let t = x % n;
             ret.push(t);
             x /= n;
         }
@@ -272,7 +272,7 @@ impl NRadixFrom for u128 {
         let mut ret = vec![];
         let mut x = self.clone();
         while 0 < x {
-            let t = x%n;
+            let t = x % n;
             ret.push(t as u64);
             x /= n;
         }
@@ -292,9 +292,7 @@ mod test {
 
         let v = vec!['2'];
         assert_eq!(vec![1, 0], v.n_radix_from(2));
-        
-        assert_eq!(vec![1, 0], "2".n_radix_from(2));
 
-        
+        assert_eq!(vec![1, 0], "2".n_radix_from(2));
     }
 }

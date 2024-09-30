@@ -37,7 +37,6 @@ use cargo_snippet::snippet;
 //     }
 // }
 
-
 pub fn is_palindrome<T: Ord>(s: &[T]) -> bool {
     for i in 0..s.len() / 2 {
         if s[i] != s[s.len() - i - 1] {
