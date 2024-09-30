@@ -32,7 +32,7 @@ pub trait E {
     /// 二項演算の単位元
     fn e() -> Self;
 }
-pub trait Inv : Monoid{
+pub trait Inv: Monoid {
     /// 二項演算の逆元
     fn inv(s: &Self::S) -> Self::S;
 }

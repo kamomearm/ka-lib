@@ -1,8 +1,8 @@
 use crate::traits::{Doubling, Monoid};
 
-pub struct WeightDoubling<T> 
-where 
-    T: Monoid    
+pub struct WeightDoubling<T>
+where
+    T: Monoid,
 {
     table: Vec<Vec<Option<(usize, T::S)>>>,
 }
@@ -47,7 +47,7 @@ where
                 //     }
                 //     None => return None,
                 // }
-                let (nx, nm) = self.table[i][x]?;
+                let (nx, nm) = self.table[i][x].clone()?;
                 x = nx;
                 m = T::op(&m, &nm);
             }
@@ -75,7 +75,7 @@ impl Doubling for UnWeightDoubling {
 
         for k in 0..k - 1 {
             for i in 0..v.len() {
-                // table[k][i].map(|val| table[k + 1][i] = table[k][val]);
+                table[k][i].map(|val| table[k + 1][i] = table[k][val]);
             }
         }
 
@@ -89,7 +89,7 @@ impl Doubling for UnWeightDoubling {
                 //     Some(nx) => x = nx,
                 //     None => return None,
                 // }
-                let x = self.table[i][x]?;
+                x = self.table[i][x]?;
             }
         }
         Some(x)
