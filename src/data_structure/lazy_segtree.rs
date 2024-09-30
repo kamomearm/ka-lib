@@ -5,19 +5,19 @@ use crate::traits::Monoid;
 #[snippet("LazySegtree")]
 pub trait ForLazySegtree {
     /// セグ木に乗せるモノイド
-    type M: Monoid + Clone;
+    type M: Monoid;
     /// Lazyに乗せるモノイド
-    type L: Monoid + Clone;
+    type L: Monoid;
     /// モノイドMに対して、Lをどう作用させるか
-    fn mapping(m: &Self::M, l: &Self::L) -> Self::M;
+    fn mapping(m: &<Self::M as Monoid>::S, l: &<Self::L as Monoid>::S) -> <Self::M as Monoid>::S;
 }
 
 #[snippet("LazySegtree")]
 pub struct LazySegtree<T: ForLazySegtree> {
     original_size: usize,
     leaf_size: usize,
-    node: Vec<T::M>,
-    lazy: Vec<T::L>,
+    node: Vec<<T::M as Monoid>::S>,
+    lazy: Vec<<T::L as Monoid>::S>,
 }
 #[snippet("LazySegtree")]
 impl<T: ForLazySegtree> LazySegtree<T> {
@@ -30,17 +30,20 @@ impl<T: ForLazySegtree> LazySegtree<T> {
             lazy: vec![T::L::e(); 2 * size],
         }
     }
-
-    pub fn build(&mut self, vec: &[T::M]) {
+    fn next_op(&self, i: usize) -> <T::M as Monoid>::S {
+        T::M::op(&self.node[i << 1], &self.node[i << 1 | 1])
+    }
+    pub fn build(&mut self, vec: &[<T::M as Monoid>::S]) {
         for (i, ele) in vec.iter().enumerate() {
             let idx = i + self.leaf_size;
             self.node[idx] = ele.clone();
         }
         for i in (1..self.leaf_size).rev() {
-            self.node[i] = self.node[i << 1].op(&self.node[i << 1 | 1])
+            // self.node[i] = self.node[i << 1].op(&self.node[i << 1 | 1])
+            self.node[i] = self.next_op(i);
         }
     }
-    pub fn update(&mut self, i: usize, x: T::M) {
+    pub fn update(&mut self, i: usize, x: <T::M as Monoid>::S) {
         //! 一点更新 O(log N)
         assert!(i < self.original_size);
         let i = i + self.leaf_size;
@@ -67,7 +70,7 @@ impl<T: ForLazySegtree> LazySegtree<T> {
         (l, r)
     }
 
-    pub fn fold<R>(&mut self, range: R) -> T::M
+    pub fn fold<R>(&mut self, range: R) -> <T::M as Monoid>::S
     where
         R: std::ops::RangeBounds<usize>,
     {
@@ -87,19 +90,22 @@ impl<T: ForLazySegtree> LazySegtree<T> {
         let mut vr = T::M::e();
         while l < r {
             if l & 1 == 1 {
-                vl = vl.op(&self.eval_at(l));
+                // vl = vl.op(&self.eval_at(l));
+                vl = T::M::op(&vl, &self.eval_at(l));
                 l += 1;
             }
             if r & 1 == 1 {
                 r -= 1;
-                vr = self.eval_at(r).op(&vr);
+                // vr = self.eval_at(r).op(&vr);
+                vr = T::M::op(&self.eval_at(r), &vr)
             }
             l >>= 1;
             r >>= 1;
         }
-        vl.op(&vr)
+        // vl.op(&vr)
+        T::M::op(&vl, &vr)
     }
-    pub fn apply_range<R>(&mut self, range: R, a: T::L)
+    pub fn apply_range<R>(&mut self, range: R, a: <T::L as Monoid>::S)
     where
         R: std::ops::RangeBounds<usize>,
     {
@@ -130,7 +136,7 @@ impl<T: ForLazySegtree> LazySegtree<T> {
     }
     pub fn max_right<F>(&mut self, l: usize, f: F) -> usize
     where
-        F: Fn(&T::M) -> bool,
+        F: Fn(&<T::M as Monoid>::S) -> bool,
     {
         //! `f(l..r) == true`となる最大のrを探索
         assert!(l <= self.original_size);
@@ -147,21 +153,33 @@ impl<T: ForLazySegtree> LazySegtree<T> {
             }
             // ここまでの間で、始めてfalseになるrがあるので、そこを探索
             // lの部分木の葉に着くのが目的
-            if !f(&v.op(&self.node[l])) {
+            // if !f(&v.op(&self.node[l])) {
+            //     while l < self.leaf_size {
+            //         self.propagate_at(l);
+            //         // 左ノードに移動
+            //         l <<= 1;
+            //         // 左ノードがtrueなら右ノードがfalse
+            //         if f(&v.op(&self.node[l])) {
+            //             v = v.op(&self.node[l]);
+            //             l += 1;
+            //         }
+            //     }
+            //     return l - self.leaf_size;
+            // }
+            if !f(&T::M::op(&v, &self.node[l])) {
                 while l < self.leaf_size {
                     self.propagate_at(l);
-                    // 左ノードに移動
                     l <<= 1;
-                    // 左ノードがtrueなら右ノードがfalse
-                    if f(&v.op(&self.node[l])) {
-                        v = v.op(&self.node[l]);
+                    if f(&T::M::op(&v, &self.node[l])) {
+                        v = T::M::op(&v, &self.node[l]);
                         l += 1;
                     }
                 }
                 return l - self.leaf_size;
             }
             // ここまで、trueなので、総積に加える
-            v = v.op(&self.node[l]);
+            // v = v.op(&self.node[l]);
+            v = T::M::op(&v, &self.node[l]);
             l += 1; // 隣のノードに移動し、また区間を二倍にしつつ探索するloopに入る
             {
                 let l = l as isize;
@@ -175,7 +193,7 @@ impl<T: ForLazySegtree> LazySegtree<T> {
 
     pub fn min_left<F>(&mut self, r: usize, f: F) -> usize
     where
-        F: Fn(&T::M) -> bool,
+        F: Fn(&<T::M as Monoid>::S) -> bool,
     {
         //! `f(l..r) == true`となる最小のlを探索
         assert!(r <= self.original_size);
@@ -191,19 +209,32 @@ impl<T: ForLazySegtree> LazySegtree<T> {
             while r > 1 && r & 1 == 1 {
                 r >>= 1;
             }
-            if !f(&self.node[r].op(&v)) {
+            // if !f(&self.node[r].op(&v)) {
+            //     while r < self.leaf_size {
+            //         self.propagate_at(r);
+            //         r <<= 1;
+            //         r += 1;
+            //         if f(&self.node[r].op(&v)) {
+            //             v = self.node[r].op(&v);
+            //             r -= 1;
+            //         }
+            //     }
+            //     return r + 1 - self.leaf_size;
+            // }
+            if !f(&T::M::op(&self.node[r], &v)) {
                 while r < self.leaf_size {
                     self.propagate_at(r);
                     r <<= 1;
                     r += 1;
-                    if f(&self.node[r].op(&v)) {
-                        v = self.node[r].op(&v);
+                    if f(&T::M::op(&self.node[r], &v)) {
+                        v = T::M::op(&self.node[r], &v);
                         r -= 1;
                     }
                 }
                 return r + 1 - self.leaf_size;
             }
-            v = self.node[r].op(&v);
+            // v = self.node[r].op(&v);
+            v = T::M::op(&self.node[r], &v);
             {
                 let r = r as isize;
                 if r & -r == r {
@@ -217,7 +248,7 @@ impl<T: ForLazySegtree> LazySegtree<T> {
 
 #[snippet("LazySegtree")]
 impl<T: ForLazySegtree> LazySegtree<T> {
-    fn eval_at(&mut self, i: usize) -> T::M {
+    fn eval_at(&mut self, i: usize) -> <T::M as Monoid>::S {
         //! node[i]にlazy[i]を作用
         T::mapping(&self.node[i], &self.lazy[i])
     }
