@@ -75,15 +75,18 @@ impl PotentialedUnionFind {
     }
 }
 
-pub struct AbelPotentialedUnionFind<T> {
+pub struct AbelPotentialedUnionFind<T>
+where
+    T: CommutaitveGroup,
+{
     len: usize,
     par: Vec<usize>,
     size: Vec<usize>,
-    diff_weight: Vec<T>,
+    diff_weight: Vec<T::S>,
 }
 impl<T> AbelPotentialedUnionFind<T>
 where
-    T: CommutaitveGroup + Clone,
+    T: CommutaitveGroup,
 {
     pub fn new(n: usize) -> Self {
         AbelPotentialedUnionFind {
@@ -98,28 +101,29 @@ where
             x
         } else {
             let r = self.root(self.par[x]);
-            self.diff_weight[x] = self.diff_weight[x].op(&self.diff_weight[self.par[x]]);
+            // self.diff_weight[x] = self.diff_weight[x].op(&self.diff_weight[self.par[x]]);
+            self.diff_weight[x] = T::op(&self.diff_weight[x], &self.diff_weight[self.par[x]]);
             self.par[x] = r;
             r
         }
     }
-    pub fn weight(&mut self, x: usize) -> T {
+    pub fn weight(&mut self, x: usize) -> T::S {
         self.root(x);
         self.diff_weight[x].clone()
     }
-    pub fn diff(&mut self, x: usize, y: usize) -> T {
+    pub fn diff(&mut self, x: usize, y: usize) -> T::S {
         //! `x`と`y`の差
         let x = self.weight(x);
-        let y = self.weight(y).inv();
-        x.op(&y)
+        let y = T::inv(&self.weight(y));
+        T::op(&x, &y)
     }
-    pub fn unite(&mut self, x: usize, y: usize, w: T) -> bool {
+    pub fn unite(&mut self, x: usize, y: usize, w: T::S) -> bool {
         //! `weight(y) - weight(x) == w`となるようにunite
         let mut w = w;
-        // w += self.weight(x);
-        w = w.op(&self.weight(x));
-        // w -= self.weight(y);
-        w = w.op(&self.weight(y).inv());
+        // w = w.op(&self.weight(x));
+        w = T::op(&w, &self.weight(x));
+        // w = w.op(&self.weight(y).inv());
+        w = T::op(&w, &T::inv(&self.weight(y)));
 
         let mut x = self.root(x);
         let mut y = self.root(y);
@@ -128,7 +132,7 @@ where
         }
         if self.size[x] < self.size[y] {
             std::mem::swap(&mut x, &mut y);
-            w = w.inv();
+            w = T::inv(&w);
         }
         self.par[y] = x;
         self.size[x] += self.size[y];

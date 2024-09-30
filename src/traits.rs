@@ -15,6 +15,7 @@ pub trait Doubling {
 //     /// 二項演算の単位元
 //     fn e() -> Self;
 // }
+
 #[snippet("Monoid")]
 pub trait Monoid {
     type S: Clone;
@@ -22,22 +23,22 @@ pub trait Monoid {
     fn e() -> Self::S;
 }
 
-pub trait Biop {
-    /// 二項演算
-    fn op(&self, right: &Self) -> Self;
-}
+// pub trait Biop {
+//     /// 二項演算
+//     fn op(&self, right: &Self) -> Self;
+// }
 
 pub trait E {
     /// 二項演算の単位元
     fn e() -> Self;
 }
-pub trait Inv {
+pub trait Inv : Monoid{
     /// 二項演算の逆元
-    fn inv(&self) -> Self;
+    fn inv(s: &Self::S) -> Self::S;
 }
 pub trait Commutative {}
 
-pub trait CommutaitveGroup: Monoid + Inv + Commutative {}
+pub trait CommutaitveGroup: Monoid + Commutative + Inv {}
 pub trait Group: Monoid + Inv {}
 // pub trait TMonoid: Biop + E {}
-pub trait SemiGroup: Biop {}
+// pub trait SemiGroup: Biop {}
