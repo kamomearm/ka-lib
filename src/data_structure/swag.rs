@@ -8,7 +8,7 @@ use crate::traits::Monoid;
 #[derive(Debug)]
 pub struct Swag<T>
 where
-    T: Monoid + Clone,
+    T: Monoid,
 {
     front: Vec<T::S>,
     back: Vec<T::S>,
@@ -18,7 +18,7 @@ where
 
 impl<T> Swag<T>
 where
-    T: Monoid + Clone,
+    T: Monoid,
 {
     pub fn new() -> Self {
         Swag {
