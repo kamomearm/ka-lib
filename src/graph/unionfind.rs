@@ -49,7 +49,7 @@ impl PotentialedUnionFind {
         if x == y {
             return w == 0;
         }
-        
+
         if self.size[x] < self.size[y] {
             std::mem::swap(&mut x, &mut y);
             w = -w;
@@ -91,6 +91,7 @@ where
 impl<T> AbelPotentialedUnionFind<T>
 where
     T: CommutaitveGroup,
+    T::S: Eq,
 {
     pub fn new(n: usize) -> Self {
         AbelPotentialedUnionFind {
@@ -132,7 +133,7 @@ where
         let mut x = self.root(x);
         let mut y = self.root(y);
         if x == y {
-            return false;
+            return w == T::e();
         }
         if self.size[x] < self.size[y] {
             std::mem::swap(&mut x, &mut y);
