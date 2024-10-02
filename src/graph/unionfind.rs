@@ -124,6 +124,8 @@ where
     }
     pub fn unite(&mut self, x: usize, y: usize, w: T::S) -> bool {
         //! `weight(y) - weight(x) == w`となるようにunite
+        //! 
+        //! 正しく辺が張れるなら`true`そうでないなら`false`を返す
         let mut w = w;
         // w = w.op(&self.weight(x));
         w = T::op(&w, &self.weight(x));
