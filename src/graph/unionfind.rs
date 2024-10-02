@@ -37,15 +37,19 @@ impl PotentialedUnionFind {
     }
     pub fn unite(&mut self, x: usize, y: usize, w: i64) -> bool {
         //! `weight(y) - weight(x) == w`となるようにunite
+        //! 
+        //! 正しく辺が張れるなら`true`そうでないなら`false`を返す
         let mut w = w;
         w += self.weight(x);
         w -= self.weight(y);
 
         let mut x = self.root(x);
         let mut y = self.root(y);
+
         if x == y {
-            return false;
+            return w == 0;
         }
+        
         if self.size[x] < self.size[y] {
             std::mem::swap(&mut x, &mut y);
             w = -w;
