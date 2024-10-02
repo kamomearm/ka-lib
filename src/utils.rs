@@ -36,6 +36,19 @@ use cargo_snippet::snippet;
 //         (l, r)
 //     }
 // }
+pub struct TimeKeeper {
+    st: std::time::Instant,
+}
+impl TimeKeeper {
+    pub fn new() -> TimeKeeper {
+        TimeKeeper {
+            st : std::time::Instant::now()
+        }
+    }
+    pub fn elapsed_time(&self) -> std::time::Duration {
+        self.st.elapsed()
+    }
+}
 
 pub fn is_palindrome<T: Ord>(s: &[T]) -> bool {
     for i in 0..s.len() / 2 {
