@@ -32,7 +32,7 @@ impl PotentialedUnionFind {
         self.diff_weight[x]
     }
     pub fn diff(&mut self, x: usize, y: usize) -> i64 {
-        //! `x`と`y`の差
+        //! `x-y`
         self.weight(x) - self.weight(y)
     }
     pub fn unite(&mut self, x: usize, y: usize, w: i64) -> bool {
@@ -117,7 +117,7 @@ where
         self.diff_weight[x].clone()
     }
     pub fn diff(&mut self, x: usize, y: usize) -> T::S {
-        //! `x`と`y`の差
+        //! `x-y`
         let x = self.weight(x);
         let y = T::inv(&self.weight(y));
         T::op(&x, &y)
