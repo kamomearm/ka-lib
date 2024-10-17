@@ -13,25 +13,34 @@ where
     type D = Option<(usize, T::S)>;
     fn new(v: &[Self::D], k: usize) -> Self {
         //! `ターンの最大値 <= 2^kとなるk`
-        let mut table = vec![vec![None; v.len()]; k];
-        for (i, val) in v.iter().enumerate() {
-            table[0][i] = val.clone();
-        }
+        let mut table = vec![];
+        table.push(v.to_vec());
 
-        for k in 0..k - 1 {
-            for i in 0..v.len() {
-                match &table[k][i] {
-                    Some((p, m)) => {
-                        let nval = table[k][*p].clone();
-                        match nval {
-                            Some((np, nm)) => table[k + 1][i] = Some((np, T::op(&m, &nm))),
-                            None => table[k + 1][i] = None,
-                        }
-                    }
-                    None => table[k + 1][i] = None,
-                }
-            }
+        for k in 0..k-1 {
+            let next = table[k]
+                .iter()
+                .map(|s| s)
+                
         }
+        // let mut table = vec![vec![None; v.len()]; k];
+        // for (i, val) in v.iter().enumerate() {
+        //     table[0][i] = val.clone();
+        // }
+
+        // for k in 0..k - 1 {
+        //     for i in 0..v.len() {
+        //         match &table[k][i] {
+        //             Some((p, m)) => {
+        //                 let nval = table[k][*p].clone();
+        //                 match nval {
+        //                     Some((np, nm)) => table[k + 1][i] = Some((np, T::op(&m, &nm))),
+        //                     None => table[k + 1][i] = None,
+        //                 }
+        //             }
+        //             None => table[k + 1][i] = None,
+        //         }
+        //     }
+        // }
         WeightDoubling { table }
     }
     fn query(&self, k: usize, idx: usize) -> Self::D {
