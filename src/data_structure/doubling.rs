@@ -16,12 +16,22 @@ where
         let mut table = vec![];
         table.push(v.to_vec());
 
-        for k in 0..k-1 {
+        for k in 0..k - 1 {
             let next = table[k]
                 .iter()
-                .map(|s| s)
-                
+                .map(|s| {
+                    s
+                        .as_ref()
+                        .and_then(|(p, m)| {
+                            table[k][*p]
+                                .as_ref()
+                                .and_then(|(np, nm)| Some((*np, T::op(&m, nm))))
+                })}
+                )
+                .collect::<Vec<Self::D>>();
+            table.push(next);
         }
+
         // let mut table = vec![vec![None; v.len()]; k];
         // for (i, val) in v.iter().enumerate() {
         //     table[0][i] = val.clone();
