@@ -17,19 +17,20 @@ where
         for (i, val) in v.iter().enumerate() {
             table[0][i] = val.clone();
         }
-
         for k in 0..k - 1 {
             for i in 0..v.len() {
-                match &table[k][i] {
-                    Some((p, m)) => {
-                        let nval = table[k][*p].clone();
-                        match nval {
-                            Some((np, nm)) => table[k + 1][i] = Some((np, T::op(&m, &nm))),
-                            None => table[k + 1][i] = None,
-                        }
-                    }
-                    None => table[k + 1][i] = None,
-                }
+                table[k + 1][i] = table[k][i].as_ref().and_then(|(p, m)| {
+                    table[k][*p]
+                        .as_ref()
+                        .and_then(|(np, nm)| Some((*np, T::op(m, nm))))
+                });
+                // match &table[k][i] {
+                //     Some((p, m)) => match &table[k][*p] {
+                //         Some((np, nm)) => table[k + 1][i] = Some((*np, T::op(&m, &nm))),
+                //         None => table[k + 1][i] = None,
+                //     },
+                //     None => table[k + 1][i] = None,
+                // }
             }
         }
         WeightDoubling { table }
@@ -39,17 +40,13 @@ where
         let mut x = idx;
         for i in 0..=self.table.len() {
             if k >> i & 1 == 1 {
-                // match &self.table[i][x] {
-                //     Some((nx, nm)) => {
-                //         x = nx.clone();
-                //         // m = m.op(nm);
-                //         m = T::op(&m, &nm);
-                //     }
-                //     None => return None,
-                // }
-                let (nx, nm) = self.table[i][x].clone()?;
-                x = nx;
-                m = T::op(&m, &nm);
+                match &self.table[i][x] {
+                    Some((nx, nm)) => {
+                        x = *nx;
+                        m = T::op(&m, &nm);
+                    }
+                    None => return None,
+                }
             }
         }
         Some((x, m))
