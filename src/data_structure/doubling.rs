@@ -20,14 +20,12 @@ where
             let next = table[k]
                 .iter()
                 .map(|s| {
-                    s
-                        .as_ref()
-                        .and_then(|(p, m)| {
-                            table[k][*p]
-                                .as_ref()
-                                .and_then(|(np, nm)| Some((*np, T::op(&m, nm))))
-                })}
-                )
+                    s.as_ref().and_then(|(p, m)| {
+                        table[k][*p]
+                            .as_ref()
+                            .and_then(|(np, nm)| Some((*np, T::op(&m, nm))))
+                    })
+                })
                 .collect::<Vec<Self::D>>();
             table.push(next);
         }
