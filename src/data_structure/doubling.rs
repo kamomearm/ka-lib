@@ -30,25 +30,6 @@ where
             table.push(next);
         }
 
-        // let mut table = vec![vec![None; v.len()]; k];
-        // for (i, val) in v.iter().enumerate() {
-        //     table[0][i] = val.clone();
-        // }
-
-        // for k in 0..k - 1 {
-        //     for i in 0..v.len() {
-        //         match &table[k][i] {
-        //             Some((p, m)) => {
-        //                 let nval = table[k][*p].clone();
-        //                 match nval {
-        //                     Some((np, nm)) => table[k + 1][i] = Some((np, T::op(&m, &nm))),
-        //                     None => table[k + 1][i] = None,
-        //                 }
-        //             }
-        //             None => table[k + 1][i] = None,
-        //         }
-        //     }
-        // }
         WeightDoubling { table }
     }
     fn query(&self, k: usize, idx: usize) -> Self::D {
@@ -98,10 +79,6 @@ impl Doubling for UnWeightDoubling {
         let mut x = idx;
         for i in 0..=self.table.len() {
             if k >> i & 1 == 1 {
-                // match self.table[i][x] {
-                //     Some(nx) => x = nx,
-                //     None => return None,
-                // }
                 x = self.table[i][x]?;
             }
         }
